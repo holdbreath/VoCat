@@ -35,6 +35,27 @@ const isdRAID = "A0000005591010FFFFFFFF8900000100"
 // state is never changed during discovery.
 const xesimISDRAID = "A0000005591010FFFFFFFF8900000177"
 
+// fiveberISDRAID is the vendor ISD-R application exposed by 5ber eSIM cards,
+// including 5ber Ultra. It is not aliased by the standard GSMA AID, so profile
+// discovery must explicitly select it.
+const fiveberISDRAID = "A0000005591010FFFFFFFF8900050500"
+
+// esimMeISDRAID is used by eSIM.me cards.
+const esimMeISDRAID = "A0000005591010000000008900000300"
+
+// esimMeFieldISDRAID is a field variant observed on some eSIM.me cards.
+const esimMeFieldISDRAID = "A0000005591010000000890000000300"
+
+// linksFieldISDRAID is the vendor ISD-R application used by LinksField cards.
+const linksFieldISDRAID = "A000000559104C696E6B736669656C64"
+
+// estkAuxISDRAID is the deprecated AUX storage exposed by some eSTK.me products.
+const estkAuxISDRAID = "A06573746B6D65FFFFFFFF4953442D52"
+
+// glocalmeTianyuISDRAID is a field variant associated with GlocalMe/Tianyu
+// vendor applications.
+const glocalmeTianyuISDRAID = "A0000006281010FFFFFFFF8900000100"
+
 // eSTK multi-SE products expose each eUICC storage through its own vendor
 // ISD-R AID. The standard GSMA AID aliases one of them, so probing only that
 // AID silently hides the second storage.
@@ -510,7 +531,16 @@ func (manager *Manager) discoverEuiccAIDs(ctx context.Context, id string) []stri
 	}
 
 	var found []string
-	for _, aid := range []string{isdRAID, xesimISDRAID} {
+	for _, aid := range []string{
+		isdRAID,
+		xesimISDRAID,
+		fiveberISDRAID,
+		esimMeISDRAID,
+		esimMeFieldISDRAID,
+		linksFieldISDRAID,
+		estkAuxISDRAID,
+		glocalmeTianyuISDRAID,
+	} {
 		channel, err := manager.openEuiccAID(ctx, id, aid)
 		if err != nil {
 			continue

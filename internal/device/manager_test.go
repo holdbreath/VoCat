@@ -324,6 +324,13 @@ func TestParseICCIDIdentifierStripsTwoFillerNibbles(t *testing.T) {
 	}
 }
 
+func TestParseICCIDIdentifierStripsInlineBCDNibbles(t *testing.T) {
+	response := modem.Response{Lines: []string{"+QCCID: 898600C11849F1125819"}}
+	if got := parseICCIDIdentifier(response, []string{"+CCID:", "+QCCID:"}, 18, 22); got != "898600118491125819" {
+		t.Fatalf("parseICCIDIdentifier = %q", got)
+	}
+}
+
 func TestManagerRequiresStartAndKnownDevice(t *testing.T) {
 	manager, err := NewManager(Options{
 		Discoverer: staticDiscoverer{},

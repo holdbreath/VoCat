@@ -38,6 +38,7 @@ func TestICCIDIdentifierStripsBCDPadding(t *testing.T) {
 		{wire: "8944110069353447454F", prefix: "+QCCID: ", want: "8944110069353447454"},
 		{wire: "894921007608519523FF", prefix: "+QCCID: ", want: "894921007608519523"},
 		{wire: "894921007608519523FF", prefix: "+MCCID: ", want: "894921007608519523"},
+		{wire: "898600C11849F1125819", prefix: "+QCCID: ", want: "898600118491125819"},
 	} {
 		response := modem.Response{Lines: []string{test.prefix + test.wire}}
 		if got := iccidIdentifier(response, []string{"+CCID:", "+QCCID:", "+MCCID:"}, 18, 22); got != test.want {

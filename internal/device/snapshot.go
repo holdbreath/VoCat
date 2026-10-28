@@ -754,7 +754,17 @@ func parseICCIDIdentifier(
 ) string {
 	normalize := func(value string) string {
 		value = strings.Trim(value, `" `)
-		value = strings.TrimRight(value, "Ff")
+		// Quectel EC20/EC25 surfaces the EF_ICCID BCD payload as hex. Some
+		// cards carry invalid or padding nibbles (A-F) inside the field; drop
+		// them before the digit check instead of rejecting an otherwise valid
+		// card. Trailing F padding is handled by the same pass.
+		value = strings.Map(func(character rune) rune {
+			if (character >= 'A' && character <= 'F') ||
+				(character >= 'a' && character <= 'f') {
+				return -1
+			}
+			return character
+		}, value)
 		if len(value) >= minimum && len(value) <= maximum &&
 			strings.IndexFunc(value, func(character rune) bool { return !unicode.IsDigit(character) }) < 0 {
 			return value

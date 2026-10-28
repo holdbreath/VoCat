@@ -1609,7 +1609,16 @@ func iccidIdentifier(
 ) string {
 	normalize := func(value string) string {
 		value = strings.Trim(value, `" `)
-		value = strings.TrimRight(value, "Ff")
+		// Quectel EC20/EC25 surfaces the EF_ICCID BCD payload as hex. Invalid
+		// or padding nibbles (A-F) inside the field are dropped so a card whose
+		// ICCID contains BCD padding is not rejected as unreadable.
+		value = strings.Map(func(character rune) rune {
+			if (character >= 'A' && character <= 'F') ||
+				(character >= 'a' && character <= 'f') {
+				return -1
+			}
+			return character
+		}, value)
 		if validDigits(value, minimum, maximum) {
 			return value
 		}
